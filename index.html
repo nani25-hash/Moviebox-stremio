@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TheMovieBox Enhanced — Stremio Add-on Portal</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        background: '#07090f',
+        card: '#0d1119',
+        primary: '#f5b50a',      // TheMovieBox gold
+        accent: '#e50914',       // cinema red
+        foreground: '#f8fafc',
+      },
+      fontFamily: { sans: ['Manrope', 'sans-serif'] }
+    }
+  }
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background:#07090f; color:#f8fafc; font-family:'Manrope',sans-serif; }
+  ::selection { background: rgba(245,181,10,.3); }
+  .glass { background: rgba(13,17,25,.55); backdrop-filter: blur(20px); border:1px solid rgba(255,255,255,.06); }
+  .text-glow { text-shadow: 0 0 24px rgba(245,181,10,.5); }
+  .bg-grid {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='white' stroke-opacity='0.05'%3E%3Cpath d='M0 .5H31.5V32'/%3E%3C/svg%3E");
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .animate-float { animation: float 6s ease-in-out infinite; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .fade-in { animation: fadeIn .6s ease-out both; }
+  .mask-fade { mask-image: linear-gradient(to bottom, black 75%, transparent 100%); }
+  .scrollbar::-webkit-scrollbar{height:6px;width:6px} .scrollbar::-webkit-scrollbar-thumb{background:#f5b50a55;border-radius:99px}
+  .card-hover { transition: transform .5s, box-shadow .5s; }
+  .card-hover:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 25px 50px -12px rgba(245,181,10,.15); }
+  pre code .k{color:#f5b50a} pre code .v{color:#e50914}
+</style>
+</head>
+<body class="antialiased">
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="fixed top-0 inset-x-0 z-50 glass border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center text-2xl">🎬</div>
+      <span class="text-2xl font-extrabold tracking-tighter bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+        THEMOVIE<span class="text-primary">BOX</span>
+      </span>
+    </div>
+    <div class="hidden md:flex items-center gap-8 text-sm font-medium text-white/60">
+      <a href="#hero" class="hover:text-primary transition-colors">Accueil</a>
+      <a href="#catalog" class="hover:text-primary transition-colors">Catalogue</a>
+      <a href="#manifest" class="hover:text-primary transition-colors">Manifest</a>
+      <a href="#install" class="hover:text-primary transition-colors">Installation</a>
+    </div>
+    <button onclick="installAddon()" class="bg-primary hover:bg-primary/90 text-black font-bold px-6 py-2.5 rounded-full shadow-lg shadow-primary/20 transition-all">
+      Installer l'add-on
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section id="hero" class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+  <div class="absolute inset-0 z-0">
+    <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=2000"
+         alt="Cinema" class="w-full h-full object-cover opacity-25 mask-fade" />
+    <div class="absolute inset-0 bg-gradient-to-b from-background via-background/60 to-background"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <span class="inline-flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-sm font-semibold">
+      ✨ Enhanced Edition v2.0.0
+    </span>
+    <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-6 leading-[0.9]">
+      L'EXPÉRIENCE<br/>
+      <span class="text-primary text-glow">THEMOVIEBOX</span><br/>
+      ULTIME.
+    </h1>
+    <p class="text-xl text-white/60 mb-10 max-w-xl leading-relaxed">
+      Découvrez une nouvelle dimension du streaming sur Stremio. Indexation haute performance,
+      métadonnées premium et résolution instantanée des flux pour vos films et séries préférés.
+    </p>
+
+    <div class="flex flex-wrap items-center gap-4 mb-6">
+      <button onclick="installAddon()" class="bg-primary hover:bg-primary/90 text-black px-8 h-14 rounded-full font-bold text-lg shadow-xl shadow-primary/20 transition-all flex items-center gap-2">
+        ⬇ Installer l'add-on
+      </button>
+      <a href="#catalog" class="h-14 px-8 rounded-full font-bold text-lg border border-white/10 hover:bg-white/5 flex items-center transition-all">
+        Explorer le catalogue
+      </a>
+    </div>
+
+    <div class="flex items-center gap-2 max-w-md w-full glass p-1.5 rounded-full">
+      <div id="manifestUrlHero" class="flex-1 px-4 truncate text-sm text-white/40 font-mono"></div>
+      <button onclick="copyUrl(this)" class="rounded-full h-10 px-4 hover:bg-primary/10 hover:text-primary transition-all text-sm font-semibold">
+        📋 Copier l'URL
+      </button>
+    </div>
+
+    <div class="mt-12 flex flex-wrap items-center gap-8 text-sm text-white/40 font-medium">
+      <span class="flex items-center gap-2"><span class="text-primary">✔</span> Mises à jour auto</span>
+      <span class="flex items-center gap-2"><span class="text-primary">✔</span> Manifest v3 complet</span>
+      <span class="flex items-center gap-2"><span class="text-primary">✔</span> Open Source</span>
+    </div>
+  </div>
+
+  <div class="absolute right-[5%] bottom-[15%] hidden lg:block animate-float">
+    <div class="glass p-6 rounded-3xl w-80 shadow-2xl rotate-3">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center text-2xl">▶️</div>
+        <div>
+          <h3 class="font-bold">Résolution en cours</h3>
+          <p class="text-xs text-white/40">Flux 4K Ultra HD</p>
+        </div>
+      </div>
+      <div class="h-2 bg-white/5 rounded-full overflow-hidden mb-2">
+        <div class="h-full bg-primary w-[85%] animate-pulse"></div>
+      </div>
+      <div class="flex justify-between text-[10px] text-white/40 font-bold tracking-wider uppercase">
+        <span>Vitesse : 1.2 GB/s</span><span>Uptime : 99.9%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ CATALOG ══════════ -->
+<section id="catalog" class="py-24 relative overflow-hidden">
+  <div class="absolute inset-0 bg-grid pointer-events-none"></div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      <div>
+        <h2 class="text-4xl font-black tracking-tight mb-4 uppercase">Catalogue <span class="text-primary">Explorer</span></h2>
+        <p class="text-white/60 max-w-xl">Aperçu de la vaste collection fournie par TheMovieBox. Nos indexeurs agrègent les métadonnées de plusieurs sources.</p>
+      </div>
+      <div class="flex gap-2" id="filters">
+        <button data-f="All" class="fbtn px-4 py-1.5 rounded-full text-sm font-semibold bg-primary text-black">Tout</button>
+        <button data-f="Movies" class="fbtn px-4 py-1.5 rounded-full text-sm font-semibold border border-white/10 text-white/60 hover:text-white">Films</button>
+        <button data-f="Series" class="fbtn px-4 py-1.5 rounded-full text-sm font-semibold border border-white/10 text-white/60 hover:text-white">Séries</button>
+      </div>
+    </div>
+    <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+  </div>
+</section>
+
+<!-- ══════════ MANIFEST ══════════ -->
+<section id="manifest" class="py-24 bg-white/[0.02]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <div>
+      <h2 class="text-4xl font-black tracking-tight mb-6">MANIFEST <span class="text-primary">TECHNIQUE</span></h2>
+      <p class="text-white/60 mb-8 leading-relaxed">
+        Pour les développeurs et utilisateurs avancés, le manifest définit comment Stremio interagit avec l'add-on.
+        Notre manifest V3 est optimisé pour une découverte rapide et une latence ultra-faible.
+      </p>
+      <div class="space-y-6 mb-8">
+        <div class="flex gap-4"><div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary text-xl flex-shrink-0">⚙️</div><div><h4 class="font-bold">Resolveurs optimisés</h4><p class="text-sm text-white/40">Logique avancée de découverte de flux.</p></div></div>
+        <div class="flex gap-4"><div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary text-xl flex-shrink-0">⚡</div><div><h4 class="font-bold">Faible latence</h4><p class="text-sm text-white/40">CDN mondial pour la distribution du manifest.</p></div></div>
+        <div class="flex gap-4"><div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary text-xl flex-shrink-0">🌍</div><div><h4 class="font-bold">Multi-langues</h4><p class="text-sm text-white/40">Support complet du contenu international.</p></div></div>
+      </div>
+      <div class="p-6 glass rounded-2xl">
+        <h4 class="text-sm font-bold uppercase tracking-wider text-primary mb-4">URL directe du manifest</h4>
+        <div class="flex items-center gap-2 p-1 bg-black/30 rounded-lg border border-white/5">
+          <div id="manifestUrlSection" class="flex-1 px-3 truncate text-xs font-mono text-white/40"></div>
+          <button onclick="copyUrl(this)" class="h-8 px-3 text-xs font-semibold hover:bg-primary/10 hover:text-primary rounded-md transition-all">Copier</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="relative group">
+      <div class="absolute -inset-1 bg-gradient-to-r from-primary/20 to-accent/20 rounded-[2rem] blur-2xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+      <div class="relative glass rounded-[2rem] overflow-hidden shadow-2xl">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/5">
+          <span class="text-sm font-bold tracking-wider text-white/60">📄 manifest.json</span>
+          <button onclick="copyJson(this)" class="h-8 px-3 text-xs font-semibold hover:bg-primary/10 hover:text-primary rounded-md transition-all">Copier JSON</button>
+        </div>
+        <div class="p-8 overflow-x-auto font-mono text-sm leading-relaxed max-h-[500px] scrollbar">
+<pre><code>{
+  <span class="k">"id"</span>: <span class="v">"com.themoviebox.enhanced"</span>,
+  <span class="k">"version"</span>: <span class="v">"2.0.0"</span>,
+  <span class="k">"name"</span>: <span class="v">"TheMovieBox Enhanced"</span>,
+  <span class="k">"resources"</span>: [<span class="k">"catalog"</span>, <span class="k">"meta"</span>, <span class="k">"stream"</span>],
+  <span class="k">"types"</span>: [<span class="k">"movie"</span>, <span class="k">"series"</span>],
+  <span class="k">"catalogs"</span>: [
+    { <span class="k">"type"</span>: <span class="v">"movie"</span>,  <span class="k">"id"</span>: <span class="v">"themoviebox_movies"</span>, <span class="k">"name"</span>: <span class="v">"TheMovieBox Films"</span> },
+    { <span class="k">"type"</span>: <span class="v">"series"</span>, <span class="k">"id"</span>: <span class="v">"themoviebox_series"</span>, <span class="k">"name"</span>: <span class="v">"TheMovieBox Séries"</span> }
+  ]
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ INSTALL / FOOTER ══════════ -->
+<footer class="border-t border-white/5 pt-24 pb-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div id="install" class="mb-24">
+      <div class="glass rounded-[3rem] p-12 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-3xl rounded-full"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+          <div>
+            <h2 class="text-4xl font-black tracking-tight mb-6">PRÊT À <span class="text-primary text-glow">REGARDER ?</span></h2>
+            <p class="text-white/60 mb-8 leading-relaxed max-w-md">L'installation de TheMovieBox Enhanced est simple. Suivez ces 3 étapes pour débloquer un monde de contenu haute qualité dans votre bibliothèque Stremio.</p>
+            <div class="space-y-6">
+              <div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center text-primary font-bold">1</div><span class="font-medium">Cliquez sur « Installer l'add-on » ci-dessus.</span></div>
+              <div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center text-primary font-bold">2</div><span class="font-medium">Stremio proposera automatiquement l'installation.</span></div>
+              <div class="flex items-center gap-4"><div class="w-10 h-10 rounded-full border border-primary/20 flex items-center justify-center text-primary font-bold">3</div><span class="font-medium">Confirmez l'installation et profitez-en !</span></div>
+            </div>
+          </div>
+          <div class="flex flex-col items-center text-center p-8 glass rounded-[2rem]">
+            <div class="w-20 h-20 bg-primary/20 rounded-2xl flex items-center justify-center mb-6 text-4xl">🖥️</div>
+            <h3 class="text-2xl font-bold mb-4">Desktop & Mobile</h3>
+            <p class="text-white/40 text-sm mb-8 max-w-xs">TheMovieBox Enhanced fonctionne parfaitement sur toutes les plateformes Stremio : Android, iOS, Windows et macOS.</p>
+            <button onclick="installAddon()" class="w-full bg-primary hover:bg-primary/90 text-black rounded-2xl h-14 font-bold shadow-xl shadow-primary/20 transition-all">Ajouter à Stremio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs font-bold tracking-widest text-white/20 uppercase">
+      <p>© 2026 THEMOVIEBOX ENHANCED. TOUS DROITS RÉSERVÉS.</p>
+      <div class="flex gap-8">
+        <a href="#" class="hover:text-primary transition-colors">Confidentialité</a>
+        <a href="#" class="hover:text-primary transition-colors">Conditions</a>
+        <a href="https://themoviebox.org" class="hover:text-primary transition-colors">themoviebox.org</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] glass px-6 py-3 rounded-full text-sm font-semibold opacity-0 pointer-events-none transition-all duration-300 border-primary/30"></div>
+
+<script>
+const MANIFEST = {
+  "id": "com.themoviebox.enhanced",
+  "version": "2.0.0",
+  "name": "TheMovieBox Enhanced",
+  "description": "Regardez films et séries depuis TheMovieBox dans Stremio avec des resolveurs optimisés.",
+  "logo": "https://themoviebox.org/favicon.ico",
+  "resources": ["catalog", "meta", "stream"],
+  "types": ["movie", "series"],
+  "idPrefixes": ["themoviebox:"],
+  "catalogs": [
+    { "type": "movie",  "id": "themoviebox_movies", "name": "TheMovieBox Films" },
+    { "type": "series", "id": "themoviebox_series", "name": "TheMovieBox Séries" }
+  ]
+};
+
+const CONTENT = [
+  { title:"Dune: Part Two", rating:8.6, year:2024, duration:"2h 46m", quality:"4K", category:"Movies", img:"https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80&w=400" },
+  { title:"Oppenheimer", rating:8.4, year:2023, duration:"3h 00m", quality:"4K", category:"Movies", img:"https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&q=80&w=400" },
+  { title:"The Batman", rating:7.8, year:2022, duration:"2h 56m", quality:"4K", category:"Movies", img:"https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&q=80&w=400" },
+  { title:"Everything Everywhere", rating:7.9, year:2022, duration:"2h 19m", quality:"HD", category:"Movies", img:"https://images.unsplash.com/photo-1594908900066-3f47337549d8?auto=format&fit=crop&q=80&w=400" },
+  { title:"The Last of Us", rating:8.8, year:2023, duration:"S1-S2", quality:"4K", category:"Series", img:"https://images.unsplash.com/photo-1533488765986-dfa2a9939ca1?auto=format&fit=crop&q=80&w=400" },
+  { title:"House of the Dragon", rating:8.4, year:2022, duration:"S1-S2", quality:"4K", category:"Series", img:"https://images.unsplash.com/photo-1594909122845-11baa439b7bf?auto=format&fit=crop&q=80&w=400" },
+  { title:"Severance", rating:8.7, year:2022, duration:"S1-S2", quality:"4K", category:"Series", img:"https://images.unsplash.com/photo-1542204172-55af30e4f07d?auto=format&fit=crop&q=80&w=400" },
+  { title:"Wednesday", rating:8.5, year:2022, duration:"S1", quality:"4K", category:"Series", img:"https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&q=80&w=400" }
+];
+
+const manifestUrl = location.origin + location.pathname.replace(/[^/]*$/, '') + 'manifest.json';
+document.getElementById('manifestUrlHero').textContent = manifestUrl;
+document.getElementById('manifestUrlSection').textContent = manifestUrl;
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('opacity-0');
+  setTimeout(()=>t.classList.add('opacity-0'), 2200);
+}
+function installAddon(){
+  location.href = manifestUrl.replace(/^https?:\/\//, 'stremio://');
+}
+function copyUrl(btn){
+  navigator.clipboard.writeText(manifestUrl);
+  btn.textContent = '✔ Copié !';
+  toast('URL du manifest copiée !');
+  setTimeout(()=>btn.textContent='📋 Copier l\'URL', 2000);
+}
+function copyJson(btn){
+  navigator.clipboard.writeText(JSON.stringify(MANIFEST, null, 2));
+  btn.textContent = '✔ Copié !';
+  toast('JSON du manifest copié !');
+  setTimeout(()=>btn.textContent='Copier JSON', 2000);
+}
+
+function render(filter){
+  const items = filter==='All' ? CONTENT : CONTENT.filter(c=>c.category===filter);
+  document.getElementById('grid').innerHTML = items.map((m,i)=>`
+    <div class="group fade-in" style="animation-delay:${i*80}ms">
+      <div class="aspect-[2/3] rounded-2xl overflow-hidden relative shadow-2xl card-hover">
+        <img src="${m.img}" alt="${m.title}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <span class="absolute top-4 right-4 bg-primary/90 text-black text-xs font-bold px-2.5 py-1 rounded-full">${m.quality}</span>
+        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onclick="toast('Aperçu de ${m.title} — installez l\\'add-on pour regarder !')" class="w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-2xl shadow-primary/40 scale-0 group-hover:scale-100 transition-transform duration-500 text-black text-2xl">▶</button>
+        </div>
+      </div>
+      <div class="mt-5">
+        <div class="flex items-center gap-2 mb-1 text-sm">
+          <span class="text-primary font-bold">★ ${m.rating}</span>
+          <span class="text-white/20">•</span>
+          <span class="text-white/40">${m.year}</span>
+        </div>
+        <h3 class="text-xl font-bold tracking-tight group-hover:text-primary transition-colors truncate">${m.title}</h3>
+        <p class="text-white/40 text-sm mt-1">🕒 ${m.duration}</p>
+      </div>
+    </div>`).join('');
+}
+render('All');
+
+document.querySelectorAll('.fbtn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.fbtn').forEach(x=>{
+    x.className='fbtn px-4 py-1.5 rounded-full text-sm font-semibold border border-white/10 text-white/60 hover:text-white';
+  });
+  b.className='fbtn px-4 py-1.5 rounded-full text-sm font-semibold bg-primary text-black';
+  render(b.dataset.f);
+}));
+</script>
+</body>
+</html>

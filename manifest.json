@@ -1,0 +1,22 @@
+{
+  "id": "com.themoviebox.enhanced",
+  "version": "2.0.0",
+  "name": "TheMovieBox Enhanced",
+  "description": "Regardez films et séries depuis TheMovieBox dans Stremio avec des resolveurs optimisés.",
+  "logo": "https://themoviebox.org/favicon.ico",
+  "resources": ["catalog", "meta", "stream"],
+  "types": ["movie", "series"],
+  "idPrefixes": ["themoviebox:"],
+  "catalogs": [
+    {
+      "type": "movie",
+      "id": "themoviebox_movies",
+      "name": "TheMovieBox Films"
+    },
+    {
+      "type": "series",
+      "id": "themoviebox_series",
+      "name": "TheMovieBox Séries"
+    }
+  ]
+}
