@@ -16,7 +16,9 @@ Portail d'installation Stremio pour **TheMovieBox** (themoviebox.org), inspiré 
 |---|---|
 | `index.html` | Portail complet (hero, catalogue, manifest, guide d'installation) |
 | `manifest.json` | Manifest Stremio V3 de l'add-on |
+| `favicon.svg` | Icône du site (distincte du logo de l'add-on) |
 | `README.md` | Ce fichier |
+| `LICENSE` | Licence MIT du projet |
 
 ## 🌐 Déploiement
 
